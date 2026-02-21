@@ -1,0 +1,262 @@
+/**
+ * index.css
+ * 全局样式：Tailwind 指令 + 主题变量、玻璃态、动画、弹窗/Toast/移动端菜单等
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== 主题与根布局 ========== */
+:root {
+  --foreground-rgb: 255,255,255;
+  --background-start-rgb: 5,5,10;
+  --background-end-rgb: 0,0,0;
+  --neon-cyan: #00f3ff;
+  --neon-purple: #bc13fe;
+}
+
+html {
+  background: #000;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: radial-gradient(circle,#1a1a2e 0%,#000 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body:before {
+  content: "";
+  pointer-events: none;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+/* ========== 玻璃态面板 ========== */
+.glass-panel {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: #ffffff08;
+  border: 1px solid #ffffff14;
+  box-shadow: 0 4px 30px #00000080, inset 0 0 20px #ffffff05;
+}
+
+.glass-card {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: linear-gradient(135deg,#ffffff0d 0%,#ffffff03 100%);
+  border: 1px solid #ffffff0d;
+  border-color: #ffffff1a #ffffff0d #ffffff05;
+  box-shadow: 0 8px 32px #0000004d;
+}
+
+/* 移动端减弱模糊以减轻性能压力 */
+@media (max-width: 768px) {
+  .glass-card {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  .backdrop-blur-2xl,
+  .backdrop-blur-xl {
+    -webkit-backdrop-filter: blur(6px) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+  .blur-3xl {
+    filter: blur(16px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-spin-slow,
+  .animate-spin-reverse,
+  .animate-pulse-glow,
+  .animate-slide-progress {
+    animation: none !important;
+  }
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.3), 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(188, 19, 254, 0.3), 0 0 20px rgba(188, 19, 254, 0.2);
+}
+
+.text-glow-danger {
+  text-shadow: 0 0 10px rgba(255, 0, 80, 0.3), 0 0 20px rgba(255, 0, 80, 0.2);
+}
+
+@keyframes slide-progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-slide-progress {
+  animation: slide-progress 2s ease-in-out infinite;
+}
+
+/* ========== 弹窗（挂载到 #app-overlays） ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2147483646 !important;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: none;
+  overscroll-behavior: contain;
+  background: transparent;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: auto;
+  touch-action: none;
+  z-index: 1;
+}
+
+.modal-content {
+  position: relative;
+  background-color: rgb(15, 23, 42) !important;
+  color: white !important;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  pointer-events: auto;
+  z-index: 2147483646 !important;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem;
+  color: rgb(148, 163, 184);
+  transition: all 0.2s;
+  z-index: 10;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.modal-close-button:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+}
+
+.modal-footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+@media (min-width: 640px) {
+  .modal-overlay { padding: 1rem; }
+  .modal-content { border-radius: 1rem; }
+  .modal-close-button { top: 1rem; right: 1rem; }
+  .modal-body { padding: 1.5rem; }
+  .modal-footer { padding: 1rem 1.5rem; }
+}
+
+/* ========== Toast（需高于弹窗，确保交易结果提示可见） ========== */
+.toast-container {
+  z-index: 2147483647 !important;
+}
+
+/* ========== Toast 进入/离开动画 ========== */
+.toast-enter-active { transition: all 0.3s ease-out; }
+.toast-enter-from { opacity: 0; transform: translateX(100%); }
+.toast-leave-active { transition: all 0.2s ease-in; }
+.toast-leave-to { opacity: 0; transform: translateX(100%); }
+.toast-move { transition: transform 0.3s ease; }
+
+/* ========== 移动端菜单与图标过渡 ========== */
+.mobile-menu-enter-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-menu-leave-active {
+  transition: all 0.25s cubic-bezier(0.4, 0, 1, 1);
+}
+.mobile-menu-enter-from {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+.mobile-menu-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mobile-menu-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+/* Icon Transition */
+.icon-enter-active,
+.icon-leave-active { transition: all 0.2s ease; }
+.icon-enter-from { opacity: 0; transform: rotate(-90deg) scale(0.8); }
+.icon-enter-to { opacity: 1; transform: rotate(0deg) scale(1); }
+.icon-leave-from { opacity: 1; transform: rotate(0deg) scale(1); }
+.icon-leave-to { opacity: 0; transform: rotate(90deg) scale(0.8); }
+
+/* ========== 实时战况面板滚动条 ========== */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6, 182, 212, 0.5) rgba(255, 255, 255, 0.05);
+}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin: 4px 0;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.6) 0%, rgba(6, 182, 212, 0.4) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
